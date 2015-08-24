@@ -115,8 +115,10 @@ module MySQLBigTableMigration
     end
 
     say "Replacing source table with temporary table..."
-    rename_table table_name, old_table_name
-    rename_table new_table_name, table_name
+    # TODO: revert back to the original way of using #rename_table
+    # Once we consolidate the migration and remove with_tmp_table from older migrations.
+    # see: https://github.com/analog-analytics/mysql_big_table_migration/blob/9780ca81ef34f0fc2defad2bb0769b0b1399b502/lib/mysql_big_table_migration.rb#L118-L119
+    connection.execute("RENAME TABLE #{table_name} TO #{old_table_name}, #{new_table_name} TO #{table_name}")
 
     say "Cleaning up, checking for rows created/updated during migration, dropping old table..."
     begin
